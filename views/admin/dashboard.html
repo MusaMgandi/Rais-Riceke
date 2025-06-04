@@ -417,15 +417,23 @@
         // Load orders function
         async function loadOrders() {
             try {
-                const q = query(collection(db, "orders"));
-                const querySnapshot = await getDocs(q);
-                const orders = [];
-                querySnapshot.forEach((doc) => {
-                    orders.push({ id: doc.id, ...doc.data() });
+                const ordersQuery = query(
+                    collection(db, "orders"),
+                    orderBy("createdAt", "desc")
+                );
+
+                onSnapshot(ordersQuery, (snapshot) => {
+                    if (snapshot.empty) {
+                        document.getElementById('ordersList').innerHTML = 
+                            '<p class="text-center text-gray-500 py-8">No orders found</p>';
+                        return;
+                    }
+                    renderOrders(snapshot.docs);
                 });
-                if (ordersTableEl) renderOrders(orders);
             } catch (error) {
                 console.error("Error loading orders:", error);
+                document.getElementById('ordersList').innerHTML = 
+                    '<p class="text-center text-red-500 py-8">Error loading orders</p>';
             }
         }
 
@@ -449,79 +457,91 @@
             renderOrders(orders);
         });
 
-        function renderOrders(orders) {
-            // Desktop table view
-            const tbody = document.getElementById('ordersTable');
-            tbody.innerHTML = orders.map(order => `
-                <tr class="border-b">
-                    <td class="px-6 py-4">${order.id}</td>
-                    <td class="px-6 py-4">${order.customerName}</td>
-                    <td class="px-6 py-4">${order.location || 'N/A'}</td>
-                    <td class="px-6 py-4">${formatProducts(order.products)}</td>
-                    <td class="px-6 py-4">KSh ${order.total}</td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}">
-                            ${order.status}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <select class="border rounded px-2 py-1" onchange="updateOrderStatus('${order.id}', this.value)">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                        </select>
-                    </td>
-                </tr>
-            `).join('');
-
-            // Mobile cards view
-            const cardsContainer = document.getElementById('ordersCards');
-            cardsContainer.innerHTML = orders.map(order => `
-                <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-sm font-medium text-gray-500">Order ID:</span>
-                        <span class="font-bold">${order.id}</span>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-sm font-medium text-gray-500">Customer:</span>
-                            <span>${order.customerName}</span>
-                        </div>
-                        
-                        <div class="flex justify-between">
-                            <span class="text-sm font-medium text-gray-500">Location:</span>
-                            <span>${order.location || 'N/A'}</span>
-                        </div>
-                        
-                        <div class="border-t pt-2">
-                            <span class="text-sm font-medium text-gray-500">Products:</span>
-                            <p class="mt-1 text-sm">${formatProducts(order.products)}</p>
-                        </div>
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-500">Total:</span>
-                            <span class="font-bold text-green-600">KSh ${order.total}</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-500">Status:</span>
-                            <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}">
-                                ${order.status}
-                            </span>
-                        </div>
-                        
-                        <div class="border-t pt-3">
-                            <select class="w-full border rounded px-2 py-1.5 text-sm" onchange="updateOrderStatus('${order.id}', this.value)">
-                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Change to Pending</option>
-                                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Change to Processing</option>
-                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Change to Completed</option>
-                            </select>
-                        </div>
-                    </div>
+        function formatProducts(products) {
+            if (!products || !Array.isArray(products)) return 'No products';
+            
+            return products.map(product => `
+                <div class="flex items-center space-x-4 mb-2">
+                    <span class="font-medium">${product.name || 'Unknown Product'}</span>
+                    <span class="text-gray-600">x${product.quantity || 0}</span>
+                    <span class="text-gray-600">KSh ${(product.price || 0).toLocaleString()}</span>
                 </div>
             `).join('');
         }
+
+        function renderOrders(orders) {
+            const ordersContainer = document.getElementById('ordersList');
+            if (!ordersContainer) return;
+
+            ordersContainer.innerHTML = orders.map(order => {
+                const orderData = order.data();
+                return `
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-semibold">Order #${order.id.slice(-6)}</h3>
+                                <p class="text-sm text-gray-500">
+                                    ${new Date(orderData.createdAt).toLocaleString()}
+                                </p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm ${
+                                orderData.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                'bg-yellow-100 text-yellow-800'
+                            }">${orderData.status || 'pending'}</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500">Products</h4>
+                                <div class="mt-2">
+                                    ${orderData.items ? formatProducts(orderData.items) : 'No items'}
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between pt-4 border-t">
+                                <span class="font-medium">Total Amount:</span>
+                                <span class="font-bold text-green-600">
+                                    KSh ${(orderData.total || 0).toLocaleString()}
+                                </span>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-2">
+                                <button onclick="updateOrderStatus('${order.id}', 'completed')" 
+                                    class="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                    Mark as Completed
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load orders with error handling
+        async function loadOrders() {
+            try {
+                const ordersQuery = query(
+                    collection(db, "orders"),
+                    orderBy("createdAt", "desc")
+                );
+
+                onSnapshot(ordersQuery, (snapshot) => {
+                    if (snapshot.empty) {
+                        document.getElementById('ordersList').innerHTML = 
+                            '<p class="text-center text-gray-500 py-8">No orders found</p>';
+                        return;
+                    }
+                    renderOrders(snapshot.docs);
+                });
+            } catch (error) {
+                console.error("Error loading orders:", error);
+                document.getElementById('ordersList').innerHTML = 
+                    '<p class="text-center text-red-500 py-8">Error loading orders</p>';
+            }
+        }
+
+        // Initialize orders
+        window.addEventListener('DOMContentLoaded', loadOrders);
 
         // Logout functionality
         document.getElementById('logoutBtn').addEventListener('click', () => {

@@ -1,0 +1,4 @@
+/* /public/index.html 200
+/views/* /public/views/:splat 200
+/images/* /public/images/:splat 200
+/js/* /public/js/:splat 200
