@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAIS - Payment</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/views/homepage.html" class="flex items-center">
+                    <span class="text-3xl font-bold text-green-600 font-serif">RAIS</span>
+                    <span class="ml-2 text-xs bg-yellow-400 text-black px-2 py-1 rounded-full font-semibold">Premium</span>
+                </a>
+                <nav>
+                    <a href="/views/homepage.html" class="text-gray-600 hover:text-green-600">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Products
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg">
+            <div class="px-6 py-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900" id="productName">Loading...</h2>
+                    <span class="text-2xl font-bold text-green-600" id="productPrice">...</span>
+                </div>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Phone Number (M-Pesa)</label>
+                        <input type="tel" id="phone" placeholder="254700000000" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Delivery Address</label>
+                        <textarea id="address" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Quantity (KGs)</label>
+                        <div class="flex items-center mt-1">
+                            <button id="decreaseQty" class="px-3 py-1 border rounded-l-md hover:bg-gray-100">-</button>
+                            <input type="number" id="quantity" value="1" min="1" max="100" class="w-20 text-center border-t border-b" placeholder="KGs">
+                            <button id="increaseQty" class="px-3 py-1 border rounded-r-md hover:bg-gray-100">+</button>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Minimum: 1KG, Maximum: 100KG</p>
+                    </div>
+
+                    <button id="payButton" class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Pay with M-Pesa
+                    </button>
+
+                    <button onclick="window.history.back()" class="w-full mt-4 bg-gray-100 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-200">
+                        Cancel
+                    </button>
+                </div>
+                
+                <!-- Total Price -->
+                <div class="mt-6 pt-6 border-t">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Total Amount:</span>
+                        <span class="text-2xl font-bold text-green-600" id="totalPrice">...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message (hidden by default) -->
+        <div id="successMessage" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white p-8 rounded-lg shadow-xl text-center">
+                <div class="text-green-500 mb-4"><i class="fas fa-check-circle text-5xl"></i></div>
+                <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
+                <p class="text-gray-600 mb-4">Your order has been placed successfully.</p>
+                <button onclick="window.location.href='/views/homepage.html'" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get product details from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const productName = urlParams.get('product');
+        const price = urlParams.get('price');
+
+        // Update page with product details
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('productPrice').textContent = `KSh ${Number(price).toLocaleString()}`;
+
+        // Quantity handlers
+        const qtyInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decreaseQty');
+        const increaseBtn = document.getElementById('increaseQty');
+        
+        function updateTotal() {
+            const qty = parseInt(qtyInput.value);
+            const basePrice = Number(price);
+            const total = qty * basePrice;
+            document.getElementById('totalPrice').textContent = `KSh ${total.toLocaleString()}`;
+        }
+        
+        decreaseBtn.addEventListener('click', () => {
+            if (qtyInput.value > 1) {
+                qtyInput.value = parseInt(qtyInput.value) - 1;
+                updateTotal();
+            }
+        });
+        
+        increaseBtn.addEventListener('click', () => {
+            qtyInput.value = parseInt(qtyInput.value) + 1;
+            updateTotal();
+        });
+        
+        qtyInput.addEventListener('change', () => {
+            let value = parseInt(qtyInput.value);
+            if (value < 1) value = 1;
+            if (value > 100) value = 100;
+            qtyInput.value = value;
+            updateTotal();
+        });
+        
+        // Initialize total
+        updateTotal();
+        
+        // Handle payment button click
+        document.getElementById('payButton').addEventListener('click', function() {
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+
+            if (!phone.match(/^254\d{9}$/)) {
+                alert('Please enter a valid phone number starting with 254');
+                return;
+            }
+            
+            if (!address) {
+                alert('Please enter a delivery address');
+                return;
+            }
+
+            // Show payment simulation
+            alert('Payment simulation: M-Pesa prompt sent to ' + phone);
+            
+            // Show success message after 2 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.remove('hidden');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

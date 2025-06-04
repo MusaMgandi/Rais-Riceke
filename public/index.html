@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAIS - Premium Rice from Kenya</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.657 0 3-1.343 3-3s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .hover-grow {
+            transition: all 0.3s ease;
+        }
+        .hover-grow:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Custom override for text-white class */
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(155 8 8) !important;
+        }
+        :root {
+            --primary: #2F855A; /* green-700 */
+            --secondary: #276749; /* green-800 */
+            --accent: #F6E05E; /* yellow-400 */
+        }
+        
+        /* Hero Section Styles */
+        #home {
+            width: 100vw;
+            max-width: 100%;
+            margin: 0;
+            padding-left: 0;
+            padding-right: 0;
+            overflow-x: hidden;
+        }
+        
+        .hero-slideshow {
+            width: 100vw;
+            left: 0;
+            right: 0;
+            margin-left: calc(-50vw + 50%);
+            margin-right: calc(-50vw + 50%);
+        }
+        
+        .hero-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hero-slide.active {
+            display: block;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+        
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .text-shadow-lg {
+            text-shadow: 0 4px 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
+        }
+        
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full z-50 transition-all duration-300 py-3" id="navbar">
+        <div class="container mx-auto px-6">
+            <nav class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <a href="#" class="flex items-center">
+                        <span class="text-3xl font-bold text-primary font-serif">RAIS</span>
+                        <span class="ml-2 text-xs bg-accent text-gray-900 px-2 py-1 rounded-full font-semibold">Premium</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="flex items-center space-x-1 hover:text-primary transition duration-300">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#about" class="flex items-center space-x-1 hover:text-primary transition duration-300">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About</span>
+                    </a>
+                    <a href="#products" class="flex items-center space-x-1 hover:text-primary transition duration-300">
+                        <i class="fas fa-box"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="#testimonials" class="flex items-center space-x-1 hover:text-primary transition duration-300">
+                        <i class="fas fa-star"></i>
+                        <span>Testimonials</span>
+                    </a>
+                    <a href="#contact" class="flex items-center space-x-1 hover:text-primary transition duration-300">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact</span>
+                    </a>
+                    <a href="/views/signup.html" class="bg-primary hover:bg-primary text-white px-6 py-2 rounded-full transition duration-300 flex items-center space-x-2 shadow-md hover:shadow-xl">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Order Now</span>
+                    </a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="menu-toggle" class="md:hidden focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </nav>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden bg-white py-4 mt-2 rounded-lg shadow-lg absolute left-6 right-6 z-20">
+                <div class="flex flex-col space-y-4 px-4">
+                    <a href="#home" class="flex items-center space-x-2 hover:text-primary transition duration-300">
+                        <i class="fas fa-home w-5 text-center"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#about" class="flex items-center space-x-2 hover:text-primary transition duration-300">
+                        <i class="fas fa-info-circle w-5 text-center"></i>
+                        <span>About</span>
+                    </a>
+                    <a href="#products" class="flex items-center space-x-2 hover:text-primary transition duration-300">
+                        <i class="fas fa-box w-5 text-center"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="#testimonials" class="flex items-center space-x-2 hover:text-primary transition duration-300">
+                        <i class="fas fa-star w-5 text-center"></i>
+                        <span>Testimonials</span>
+                    </a>
+                    <a href="#contact" class="flex items-center space-x-2 hover:text-primary transition duration-300">
+                        <i class="fas fa-envelope w-5 text-center"></i>
+                        <span>Contact</span>
+                    </a>
+                    <a href="/views/signup.html" class="bg-primary hover:bg-primary text-white px-4 py-2 rounded-full transition duration-300 flex items-center justify-center space-x-2 shadow-md hover:shadow-xl">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Order Now</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-[90vh] md:min-h-screen w-full flex items-center pt-20 md:pt-24 pb-16 overflow-hidden">
+        <!-- Slideshow Background -->
+        <div class="hero-slideshow absolute inset-0 w-full h-full z-0">
+            <div class="hero-slide active">
+                <img src="/public/images/rice.png" class="w-full h-full object-cover object-center" alt="Rice Image 1">
+                <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40 md:from-black/70 md:to-black/40"></div>
+            </div>
+            <div class="hero-slide">
+                <img src="/public/images/rice1.png" class="w-full h-full object-cover object-center" alt="Rice Image 2">
+                <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40 md:from-black/70 md:to-black/40"></div>
+            </div>
+            <div class="hero-slide">
+                <img src="/public/images/rice2.png" class="w-full h-full object-cover object-center" alt="Rice Image 3">
+                <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40 md:from-black/70 md:to-black/40"></div>
+            </div>
+        </div>
+        
+        <!-- Hero Content -->
+        <div class="container mx-auto px-4 sm:px-6 relative z-10">
+            <div class="max-w-3xl bg-black/70 md:bg-black/60 backdrop-blur-sm md:backdrop-blur-md p-6 sm:p-8 md:p-10 rounded-lg border border-white/20 shadow-xl md:shadow-2xl">
+                <div data-aos="fade-right" data-aos-delay="100">
+                    <span class="bg-accent text-black font-extrabold text-sm sm:text-base md:text-xl tracking-wide px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full inline-block mb-4 sm:mb-6 shadow-lg md:shadow-xl border-2 border-yellow-500 uppercase">PREMIUM QUALITY</span>
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 md:mb-8 font-serif leading-tight">Rice from Kenya</h1>
+                    <p class="text-white text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 md:mb-10 max-w-2xl font-medium leading-relaxed">Experience the authentic taste of Kenya with our carefully selected premium rice varieties, delivered fresh to your doorstep.</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-12">
+                        <a href="/views/signup.html" class="bg-accent hover:bg-yellow-500 text-black font-bold text-lg sm:text-xl py-3 sm:py-4 px-6 sm:px-8 md:px-10 rounded-full transition duration-300 inline-block text-center shadow-lg hover:shadow-xl border-2 border-yellow-500 transform hover:scale-105">
+                            Shop Now
+                        </a>
+                        <a href="#about" class="bg-white hover:bg-gray-100 text-primary font-bold text-lg sm:text-xl py-3 sm:py-4 px-6 sm:px-8 md:px-10 rounded-full transition duration-300 inline-block text-center shadow-lg hover:shadow-xl border-2 border-white transform hover:scale-105">
+                            Learn More
+                        </a>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="flex items-center justify-center sm:justify-start bg-white/40 p-2 sm:p-3 px-4 sm:px-6 rounded-full shadow-md sm:shadow-lg border border-white/50">
+                            <i class="fas fa-truck text-accent text-xl sm:text-2xl mr-2 sm:mr-3"></i>
+                            <span class="text-white font-bold text-sm sm:text-base whitespace-nowrap">Free Delivery</span>
+                        </div>
+                        <div class="flex items-center justify-center sm:justify-start bg-white/40 p-2 sm:p-3 px-4 sm:px-6 rounded-full shadow-md sm:shadow-lg border border-white/50">
+                            <i class="fas fa-leaf text-accent text-xl sm:text-2xl mr-2 sm:mr-3"></i>
+                            <span class="text-white font-bold text-sm sm:text-base whitespace-nowrap">100% Organic</span>
+                        </div>
+                        <div class="flex items-center justify-center sm:justify-start bg-white p-2 sm:p-3 px-4 sm:px-6 rounded-full shadow-md sm:shadow-lg border border-accent">
+                            <i class="fas fa-medal text-primary text-xl sm:text-2xl mr-2 sm:mr-3"></i>
+                            <span class="text-black font-bold text-sm sm:text-base">Quality</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wave Divider -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" class="w-full h-12 sm:h-16 md:h-20 lg:h-24">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="fill-white"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <span class="text-primary font-semibold">OUR STORY</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-2 mb-4 font-serif">About <span class="text-primary">RAIS</span></h2>
+                <div class="w-24 h-1 bg-accent mx-auto"></div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="relative">
+                        <img src="/public/images/ricekenya.png" 
+                            alt="Rice Fields in Kenya" class="rounded-lg shadow-xl hover-grow object-cover w-full h-full">
+
+                        <div class="absolute -top-8 -left-8 bg-accent p-4 rounded-full shadow-lg hidden md:block">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1548/1548639.png" alt="Rice icon" class="w-16 h-16">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                    <h3 class="text-3xl font-semibold mb-6 font-serif">Our Journey to Excellence</h3>
+                    <p class="text-gray-700 mb-6 text-lg">
+                        RAIS is Kenya's premier rice supplier, dedicated to bringing you the highest quality rice at affordable prices. 
+                        Founded in 2015, we've built strong relationships with local farmers across Kenya's rice-growing regions.
+                    </p>
+                    <p class="text-gray-700 mb-8 text-lg">
+                        Our rice is carefully selected, processed, and packaged to maintain its natural goodness and nutritional value. 
+                        We believe in sustainable farming practices and supporting local communities.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="flex items-start">
+                            <div class="bg-primary p-2 rounded-full mr-4">
+                                <i class="fas fa-leaf text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">100% Organic</h4>
+                                <p class="text-gray-600 text-sm">No chemicals or pesticides</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-primary p-2 rounded-full mr-4">
+                                <i class="fas fa-users text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Local Farmers</h4>
+                                <p class="text-gray-600 text-sm">Supporting communities</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-primary p-2 rounded-full mr-4">
+                                <i class="fas fa-award text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Premium Quality</h4>
+                                <p class="text-gray-600 text-sm">Best grains selection</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-primary p-2 rounded-full mr-4">
+                                <i class="fas fa-truck text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Fast Delivery</h4>
+                                <p class="text-gray-600 text-sm">Across all of Kenya</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#products" class="inline-block bg-primary hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full transition duration-300">
+                        Discover Our Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <span class="text-primary font-semibold">OUR PRODUCTS</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-2 mb-4 font-serif">Premium Rice <span class="text-primary">Varieties</span></h2>
+                <div class="w-24 h-1 bg-accent mx-auto"></div>
+                <p class="mt-6 text-gray-600 max-w-2xl mx-auto">Discover our selection of high-quality rice varieties, sourced from the finest farms in Kenya and processed with care to preserve their natural goodness.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Product 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover-grow" data-aos="fade-up" data-aos-delay="100">
+                    <div class="relative">
+                        <img src="/public/images/basmati.png" 
+                            alt="Basmati Rice" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 right-4 bg-accent text-white text-sm font-bold px-3 py-1 rounded-full">Best Seller</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold">Premium Basmati Rice</h3>
+                            <div class="text-primary font-bold">KSh 250</div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Long-grain aromatic rice with a nutty flavor, perfect for pilau and biryani dishes.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="text-yellow-400 mr-1">★★★★★</div>
+                                <span class="text-gray-600 text-sm">(124)</span>
+                            </div>
+                            <a href="/views/signup.html" class="bg-primary hover:bg-primary text-white px-4 py-2 rounded-full transition duration-300 flex items-center shadow-md hover:shadow-lg">
+                                <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover-grow" data-aos="fade-up" data-aos-delay="200">
+                    <div class="relative">
+                        <img src="/public/images/brown.png" 
+                            alt="Brown Rice" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 right-4 bg-green-600 text-white text-sm font-bold px-3 py-1 rounded-full">Organic</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold">Organic Brown Rice</h3>
+                            <div class="text-primary font-bold">KSh 200</div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Whole grain rice with a mild nutty flavor and chewy texture, rich in nutrients and fiber.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="text-yellow-400 mr-1">★★★★☆</div>
+                                <span class="text-gray-600 text-sm">(98)</span>
+                            </div>
+                            <a href="/views/signup.html" class="bg-primary hover:bg-primary text-white px-4 py-2 rounded-full transition duration-300 flex items-center shadow-md hover:shadow-lg">
+                                <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover-grow" data-aos="fade-up" data-aos-delay="300">
+                    <div class="relative">
+                        <img src="/public/images/aroma.png" 
+                            alt="Jasmine Rice" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 right-4 bg-blue-600 text-white text-sm font-bold px-3 py-1 rounded-full">New</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold">Fragrant Jasmine Rice</h3>
+                            <div class="text-primary font-bold">KSh 280</div>
+                        </div>
+                        <p class="text-gray-600 mb-6">Aromatic long-grain rice with a subtle floral aroma, perfect for Asian-inspired dishes.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="text-yellow-400 mr-1">★★★★★</div>
+                                <span class="text-gray-600 text-sm">(76)</span>
+                            </div>
+                            <a href="/views/signup.html" class="bg-primary hover:bg-primary text-white px-4 py-2 rounded-full transition duration-300 flex items-center shadow-md hover:shadow-lg">
+                                <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="/views/signup.html" class="inline-block bg-primary hover:bg-primary text-white font-semibold py-3 px-8 rounded-full transition duration-300 shadow-md hover:shadow-xl">
+                    View All Products
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-24 bg-gray-50 relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary rounded-full"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-accent rounded-full"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <span class="text-primary font-semibold">TESTIMONIALS</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-2 mb-4 font-serif">What Our <span class="text-primary">Customers</span> Say</h2>
+                <div class="w-24 h-1 bg-accent mx-auto"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover-grow" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex justify-center mb-6">
+                        <div class="w-20 h-20 rounded-full border-4 border-primary bg-primary flex items-center justify-center">
+                            <i class="fas fa-user text-white text-4xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-yellow-400 mb-4 text-center text-xl">★★★★★</div>
+                    <p class="text-gray-700 mb-6 text-center italic">"The best rice I've ever had! The quality is exceptional and the taste is amazing. RAIS delivers consistently excellent products that have become a staple in our home."</p>
+                    <div class="text-center">
+                        <h4 class="font-semibold text-lg">Jane Muthoni</h4>
+                        <p class="text-primary text-sm">Nairobi, Kenya</p>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover-grow md:transform md:translate-y-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex justify-center mb-6">
+                        <div class="w-20 h-20 rounded-full border-4 border-primary bg-primary flex items-center justify-center">
+                            <i class="fas fa-utensils text-white text-4xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-yellow-400 mb-4 text-center text-xl">★★★★★</div>
+                    <p class="text-gray-700 mb-6 text-center italic">"RAIS rice has become a staple in our restaurant. The grains are always perfect and cook evenly every time. Our customers love the authentic Kenyan flavor in our dishes!"</p>
+                    <div class="text-center">
+                        <h4 class="font-semibold text-lg">John Kamau</h4>
+                        <p class="text-primary text-sm">Restaurant Owner, Mombasa</p>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover-grow" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex justify-center mb-6">
+                        <div class="w-20 h-20 rounded-full border-4 border-primary bg-primary flex items-center justify-center">
+                            <i class="fas fa-leaf text-white text-4xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-yellow-400 mb-4 text-center text-xl">★★★★★</div>
+                    <p class="text-gray-700 mb-6 text-center italic">"Great service and excellent quality. The rice is always fresh and well-packaged. I appreciate that they source from local farmers and support sustainable agriculture."</p>
+                    <div class="text-center">
+                        <h4 class="font-semibold text-lg">Sarah Wanjiku</h4>
+                        <p class="text-primary text-sm">Kisumu, Kenya</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center" data-aos="fade-up" data-aos-delay="400">
+                <a href="#" class="inline-flex items-center text-primary hover:text-green-700 font-semibold transition duration-300">
+                    Read More Reviews
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="py-16 bg-primary text-white">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="mb-8 md:mb-0" data-aos="fade-right">
+                    <h2 class="text-3xl font-bold mb-4">Ready to Experience Premium Rice?</h2>
+                    <p class="text-lg">Order now and get 20% off your first purchase with code: <span class="font-bold text-accent">RAIS20</span></p>
+                </div>
+                <div data-aos="fade-left">
+                    <a href="#contact" class="bg-white text-primary hover:bg-gray-100 font-bold py-3 px-8 rounded-full transition duration-300 inline-block">
+                        Order Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-1">
+                    <div class="flex items-center mb-4">
+                        <h3 class="text-3xl font-bold text-white font-serif">RAIS</h3>
+                        <span class="ml-2 text-xs bg-accent text-white px-2 py-1 rounded-full">Premium</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">Premium quality rice delivered to your doorstep across Kenya.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition duration-300">
+                            <i class="fab fa-facebook-f text-white"></i>
+                        </a>
+                        <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition duration-300">
+                            <i class="fab fa-twitter text-white"></i>
+                        </a>
+                        <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition duration-300">
+                            <i class="fab fa-instagram text-white"></i>
+                        </a>
+                        <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition duration-300">
+                            <i class="fab fa-linkedin-in text-white"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 relative inline-block">
+                        Quick Links
+                        <span class="absolute bottom-0 left-0 w-1/2 h-0.5 bg-accent"></span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition duration-300">About Us</a></li>
+                        <li><a href="#products" class="text-gray-400 hover:text-white transition duration-300">Products</a></li>
+                        <li><a href="#testimonials" class="text-gray-400 hover:text-white transition duration-300">Testimonials</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white transition duration-300">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 relative inline-block">
+                        Contact Us
+                        <span class="absolute bottom-0 left-0 w-1/2 h-0.5 bg-accent"></span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-accent mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Rice Avenue, Nairobi, Kenya</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt text-accent mt-1 mr-3"></i>
+                            <span class="text-gray-400">+254 700 000000</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope text-accent mt-1 mr-3"></i>
+                            <span class="text-gray-400">info@rais.co.ke</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock text-accent mt-1 mr-3"></i>
+                            <span class="text-gray-400">Mon-Fri: 8AM - 6PM</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 relative inline-block">
+                        Newsletter
+                        <span class="absolute bottom-0 left-0 w-1/2 h-0.5 bg-accent"></span>
+                    </h4>
+                    <p class="text-gray-400 mb-4">Subscribe to our newsletter for updates and promotions.</p>
+                    <form class="flex flex-col sm:flex-row gap-2">
+                        <input type="email" placeholder="Your email" class="bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent">
+                        <button type="submit" class="bg-accent hover:bg-accent text-white px-4 py-2 rounded-lg transition duration-300 shadow-md hover:shadow-xl">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2025 RAIS. All rights reserved.</p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-500 hover:text-white text-sm transition duration-300">Privacy Policy</a>
+                        <a href="#" class="text-gray-500 hover:text-white text-sm transition duration-300">Terms of Service</a>
+                        <a href="#" class="text-gray-500 hover:text-white text-sm transition duration-300">FAQ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#home" id="back-to-top" class="fixed bottom-6 right-6 bg-primary hover:bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition duration-300 opacity-0">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+        
+        // Mobile menu toggle functionality
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        const backToTop = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                navbar.classList.add('py-2');
+                navbar.classList.remove('py-3');
+                navbar.classList.add('shadow-md');
+                backToTop.classList.add('opacity-100');
+                backToTop.classList.remove('opacity-0');
+            } else {
+                navbar.classList.remove('py-2');
+                navbar.classList.add('py-3');
+                navbar.classList.remove('shadow-md');
+                backToTop.classList.remove('opacity-100');
+                backToTop.classList.add('opacity-0');
+            }
+        });
+        
+        // Hero Slideshow Functionality
+        let currentSlide = 0;
+        const heroSlides = document.querySelectorAll('.hero-slide');
+        
+        function showNextSlide() {
+            // Hide all slides
+            heroSlides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Move to next slide
+            currentSlide++;
+            if (currentSlide >= heroSlides.length) {
+                currentSlide = 0;
+            }
+            
+            // Show current slide
+            heroSlides[currentSlide].classList.add('active');
+            
+            // Change slide every 5 seconds
+            setTimeout(showNextSlide, 5000);
+        }
+        
+        // Start the slideshow
+        if (heroSlides.length > 0) {
+            setTimeout(showNextSlide, 5000);
+        }
+    </script>
+</body>
+</html>

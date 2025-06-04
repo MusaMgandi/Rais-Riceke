@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAIS Admin - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Mobile Header - visible on mobile only -->
+    <header class="md:hidden bg-white shadow-lg p-4 fixed top-0 w-full z-50">
+        <div class="flex justify-between items-center">
+            <span class="text-2xl font-bold text-green-600">RAIS Admin</span>
+            <button id="sidebarToggle" class="text-gray-600 hover:text-green-600">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar - hidden by default on mobile -->
+        <div id="sidebar" class="w-64 h-screen bg-white shadow-lg fixed">
+            <div class="p-6">
+                <div class="flex items-center mb-8">
+                    <span class="text-2xl font-bold text-green-600">RAIS Admin</span>
+                </div>
+                <nav class="space-y-2">
+                    <a href="#" data-section="orders" 
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 hover:text-green-600 transition-colors">
+                        <i class="fas fa-shopping-bag w-5"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="#" data-section="products" 
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 hover:text-green-600 transition-colors">
+                        <i class="fas fa-boxes w-5"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="#" data-section="addProduct" 
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 hover:text-green-600 transition-colors">
+                        <i class="fas fa-plus-circle w-5"></i>
+                        <span>Add Product</span>
+                    </a>
+                    <a href="#" data-section="notifications" 
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 hover:text-green-600 transition-colors">
+                        <i class="fas fa-bell w-5"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <hr class="my-6 border-gray-200">
+                    <button id="logoutBtn" 
+                        class="w-full flex items-center space-x-3 p-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
+                        <i class="fas fa-sign-out-alt w-5"></i>
+                        <span>Logout</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content - adjusted padding for mobile -->
+        <div class="w-full md:ml-64 flex-1 p-4 md:p-8 mt-16 md:mt-0">
+            <!-- Orders Section -->
+            <div id="ordersSection" class="section">
+                <h1 class="text-3xl font-bold mb-8">Orders Dashboard</h1>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold">Recent Orders</h2>
+                        <div class="flex space-x-2">
+                            <select id="filterStatus" class="border rounded px-3 py-1">
+                                <option value="all">All Orders</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Orders Table for Desktop -->
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Products</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTable">
+                                <!-- Orders will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Orders Cards for Mobile -->
+                    <div class="md:hidden space-y-4" id="ordersCards">
+                        <!-- Orders will be rendered as cards here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Management Section -->
+            <div id="productsSection" class="section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold">Products Management</h1>
+                    <div class="flex space-x-3">
+                        <button onclick="showSection('addProduct')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i> Add New Product
+                        </button>
+                        <select id="productFilter" class="border rounded-lg px-3 py-2">
+                            <option value="all">All Products</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="low">Low Stock</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTable">
+                                <!-- Products will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div id="notificationsSection" class="section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold">Manage Notifications</h1>
+                    <button onclick="showNewNotificationForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        <i class="fas fa-plus mr-2"></i> New Notification
+                    </button>
+                </div>
+
+                <!-- New Notification Form -->
+                <div id="newNotificationForm" class="hidden mb-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold mb-4">Create New Notification</h2>
+                        <form id="notificationForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                <input type="text" id="notificationTitle" required class="w-full px-4 py-2 rounded-lg border border-gray-300">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                <textarea id="notificationMessage" required rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-300"></textarea>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                                    Send Notification
+                                </button>
+                                <button type="button" onclick="hideNewNotificationForm()" class="text-gray-600 hover:text-gray-800">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Notifications List -->
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Message</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notificationsTable">
+                                <!-- Notifications will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Product Section -->
+            <div id="addProductSection" class="section hidden">
+                <h1 class="text-3xl font-bold mb-8">Add New Product</h1>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <!-- Product Form -->
+                        <div class="lg:w-2/3">
+                            <form id="addProductForm" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                                        <input type="text" id="productName" required 
+                                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            placeholder="Enter product name">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Price (KSh)</label>
+                                        <input type="number" id="productPrice" required 
+                                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            placeholder="0.00">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                    <select id="productCategory" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        <option value="premium">Premium Rice</option>
+                                        <option value="organic">Organic Rice</option>
+                                        <option value="regular">Regular Rice</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <textarea id="productDescription" rows="4" 
+                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        placeholder="Enter product description"></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Stock Quantity</label>
+                                    <input type="number" id="productStock" required 
+                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        placeholder="Enter stock quantity">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Product Image</label>
+                                    <select id="productImage" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent" onchange="previewImage(this.value)">
+                                        <option value="">Select an image</option>
+                                        <option value="/public/images/basmati.png">Basmati Rice</option>
+                                        <option value="/public/images/brown.png">Brown Rice</option>
+                                        <option value="/public/images/aroma.png">Aromatic Rice</option>
+                                        <option value="/public/images/pishori.png">Pishori Rice</option>
+                                        <option value="/public/images/rice1.png">Premium Rice</option>
+                                        <option value="/public/images/rice2.png">Special Rice</option>
+                                    </select>
+                                </div>
+
+                                <div class="flex items-center space-x-4 pt-4">
+                                    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                        <i class="fas fa-plus-circle mr-2"></i> Add Product
+                                    </button>
+                                    <button type="reset" class="bg-gray-100 text-gray-600 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                                        Clear Form
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Preview Card -->
+                        <div class="lg:w-1/3">
+                            <div class="sticky top-8">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Product Preview</h3>
+                                <div class="bg-white border rounded-lg overflow-hidden shadow">
+                                    <div class="aspect-w-16 aspect-h-12 bg-gray-100">
+                                        <img id="imagePreview" src="/public/images/placeholder.png" alt="Product Preview" 
+                                            class="w-full h-48 object-cover">
+                                    </div>
+                                    <div class="p-4">
+                                        <h4 id="previewName" class="text-lg font-semibold">Product Name</h4>
+                                        <p id="previewPrice" class="text-green-600 font-bold mt-1">KSh 0.00</p>
+                                        <p id="previewDescription" class="text-gray-600 text-sm mt-2">Product description will appear here...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Section -->
+            <div id="paymentsSection" class="section hidden">
+                <h1 class="text-3xl font-bold mb-8">Payment Transactions</h1>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Transaction ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTable">
+                            <!-- Payments will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consolidate all imports -->
+    <script type="module">
+        import { auth, db } from '/public/js/firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        import { 
+            collection, query, orderBy, onSnapshot, doc, getDoc,
+            addDoc, updateDoc, deleteDoc, where 
+        } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
+        import { CLOUDINARY_CONFIG } from '/public/js/cloudinary-config.js';
+
+        // Initialize Storage
+        const storage = getStorage();
+
+        // Section Management
+        function handleSectionVisibility(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById(`${sectionId}Section`);
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden');
+            }
+
+            // Update active state in sidebar
+            document.querySelectorAll('[data-section]').forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('bg-green-50', 'text-green-600');
+                } else {
+                    link.classList.remove('bg-green-50', 'text-green-600');
+                }
+            });
+        }
+
+        // Make section handler globally available
+        window.handleSectionVisibility = handleSectionVisibility;
+
+        // Add click handlers to sidebar items
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default section
+            handleSectionVisibility('orders');
+
+            // Add click handlers
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = link.dataset.section;
+                    handleSectionVisibility(sectionId);
+                });
+            });
+        });
+
+        // Initialize dashboard
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data()?.isAdmin) {
+                    showSection('orders'); // Default section
+                } else {
+                    window.location.href = '/views/login.html';
+                }
+            } else {
+                window.location.href = '/views/login.html';
+            }
+        });
+
+        // Listen for auth state changes
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const docRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists() && docSnap.data()?.isAdmin) {
+                        // Load orders after confirming admin status
+                        listenToOrders();
+                        loadNotifications();
+                    } else {
+                        window.location.href = '/views/login.html';
+                    }
+                } catch (error) {
+                    console.error("Error checking admin status:", error);
+                    window.location.href = '/views/login.html';
+                }
+            } else {
+                window.location.href = '/views/login.html';
+            }
+        });
+
+        // Listen to orders in real-time
+        function listenToOrders() {
+            const ordersQuery = query(collection(db, "orders"));
+            onSnapshot(ordersQuery, (snapshot) => {
+                const orders = [];
+                snapshot.forEach((doc) => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                renderOrders(orders);
+            });
+        }
+
+        // Load orders function
+        async function loadOrders() {
+            try {
+                const q = query(collection(db, "orders"));
+                const querySnapshot = await getDocs(q);
+                const orders = [];
+                querySnapshot.forEach((doc) => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                if (ordersTableEl) renderOrders(orders);
+            } catch (error) {
+                console.error("Error loading orders:", error);
+            }
+        }
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = '/views/login.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        });
+
+        // Listen for orders
+        const q = query(collection(db, "orders"));
+        onSnapshot(q, (snapshot) => {
+            const orders = [];
+            snapshot.forEach((doc) => {
+                orders.push({ id: doc.id, ...doc.data() });
+            });
+            renderOrders(orders);
+        });
+
+        function renderOrders(orders) {
+            // Desktop table view
+            const tbody = document.getElementById('ordersTable');
+            tbody.innerHTML = orders.map(order => `
+                <tr class="border-b">
+                    <td class="px-6 py-4">${order.id}</td>
+                    <td class="px-6 py-4">${order.customerName}</td>
+                    <td class="px-6 py-4">${order.location || 'N/A'}</td>
+                    <td class="px-6 py-4">${formatProducts(order.products)}</td>
+                    <td class="px-6 py-4">KSh ${order.total}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <select class="border rounded px-2 py-1" onchange="updateOrderStatus('${order.id}', this.value)">
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Mobile cards view
+            const cardsContainer = document.getElementById('ordersCards');
+            cardsContainer.innerHTML = orders.map(order => `
+                <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm font-medium text-gray-500">Order ID:</span>
+                        <span class="font-bold">${order.id}</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Customer:</span>
+                            <span>${order.customerName}</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Location:</span>
+                            <span>${order.location || 'N/A'}</span>
+                        </div>
+                        
+                        <div class="border-t pt-2">
+                            <span class="text-sm font-medium text-gray-500">Products:</span>
+                            <p class="mt-1 text-sm">${formatProducts(order.products)}</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-500">Total:</span>
+                            <span class="font-bold text-green-600">KSh ${order.total}</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-500">Status:</span>
+                            <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(order.status)}">
+                                ${order.status}
+                            </span>
+                        </div>
+                        
+                        <div class="border-t pt-3">
+                            <select class="w-full border rounded px-2 py-1.5 text-sm" onchange="updateOrderStatus('${order.id}', this.value)">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Change to Pending</option>
+                                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Change to Processing</option>
+                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Change to Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "/views/login.html";
+            });
+        });
+
+        // Helper functions
+        function formatProducts(products) {
+            return products.map(p => `${p.name} (${p.quantity})`).join(', ');
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                pending: 'bg-yellow-100 text-yellow-800',
+                processing: 'bg-blue-100 text-blue-800',
+                completed: 'bg-green-100 text-green-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        window.updateOrderStatus = async function(orderId, newStatus) {
+            try {
+                await updateDoc(doc(db, "orders", orderId), {
+                    status: newStatus
+                });
+            } catch (error) {
+                console.error("Error updating order status:", error);
+                alert("Failed to update order status");
+            }
+        };
+
+        // Add sidebar toggle functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768) { // mobile only
+                const isClickInsideSidebar = sidebar.contains(e.target);
+                const isClickOnToggle = sidebarToggle.contains(e.target);
+                
+                if (!isClickInsideSidebar && !isClickOnToggle && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            }
+        });
+
+        // Section visibility handler
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(`${sectionName}Section`).classList.remove('hidden');
+        }
+
+        // Make showSection available globally
+        window.showSection = showSection;
+
+        // Preview selected image
+        window.previewImage = (imagePath) => {
+            document.getElementById('imagePreview').src = imagePath || '/public/images/placeholder.png';
+        };
+
+        // Product form live preview updates
+        document.getElementById('productName')?.addEventListener('input', (e) => {
+            document.getElementById('previewName').textContent = e.target.value || 'Product Name';
+        });
+
+        document.getElementById('productPrice')?.addEventListener('input', (e) => {
+            document.getElementById('previewPrice').textContent = `KSh ${parseFloat(e.target.value || 0).toLocaleString()}`;
+        });
+
+        document.getElementById('productDescription')?.addEventListener('input', (e) => {
+            document.getElementById('previewDescription').textContent = e.target.value || 'Product description will appear here...';
+        });
+
+        // Product Form Submit Handler
+        document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Adding...';
+            
+            try {
+                // Get form values
+                const name = document.getElementById('productName').value;
+                const price = parseFloat(document.getElementById('productPrice').value);
+                const category = document.getElementById('productCategory').value;
+                const description = document.getElementById('productDescription').value;
+                const stock = parseInt(document.getElementById('productStock').value);
+                const imageUrl = document.getElementById('productImage').value;
+
+                // Add product to Firestore
+                const productData = {
+                    name,
+                    price,
+                    category,
+                    description,
+                    stock,
+                    imageUrl,
+                    createdAt: new Date().toISOString(),
+                    active: true
+                };
+
+                await addDoc(collection(db, "products"), productData);
+
+                // Success
+                alert('Product added successfully!');
+                e.target.reset();
+                document.getElementById('imagePreview').src = '/public/images/placeholder.png';
+
+            } catch (error) {
+                console.error('Error adding product:', error);
+                alert(`Error adding product: ${error.message}`);
+            } finally {
+                submitBtn.innerHTML = '<i class="fas fa-plus-circle mr-2"></i> Add Product';
+            }
+        });
+
+        // Function to show/hide notification form
+        window.showNewNotificationForm = () => {
+            document.getElementById('newNotificationForm').classList.remove('hidden');
+        }
+
+        window.hideNewNotificationForm = () => {
+            document.getElementById('newNotificationForm').classList.add('hidden');
+        }
+
+        // Handle notification form submission
+        document.getElementById('notificationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                await addDoc(collection(db, "notifications"), {
+                    title: document.getElementById('notificationTitle').value,
+                    message: document.getElementById('notificationMessage').value,
+                    createdAt: serverTimestamp(),
+                    status: 'active'
+                });
+
+                alert('Notification sent successfully!');
+                e.target.reset();
+                hideNewNotificationForm();
+                loadNotifications();
+            } catch (error) {
+                console.error("Error sending notification:", error);
+                alert('Error sending notification');
+            }
+        });
+
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                const notificationsQuery = query(
+                    collection(db, "notifications"), 
+                    orderBy("createdAt", "desc")
+                );
+                onSnapshot(notificationsQuery, (snapshot) => {
+                    const tbody = document.getElementById('notificationsTable');
+                    tbody.innerHTML = snapshot.docs.map(doc => `
+                        <tr class="border-b">
+                            <td class="px-6 py-4 text-sm">
+                                ${new Date(doc.data().createdAt?.toDate()).toLocaleString()}
+                            </td>
+                            <td class="px-6 py-4">${doc.data().title}</td>
+                            <td class="px-6 py-4 text-sm">${doc.data().message}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-full text-xs ${
+                                    doc.data().status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                            }">
+                                ${doc.data().status}
+                            </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button onclick="deleteNotification('${doc.id}')" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                });
+            } catch (error) {
+                console.error("Error loading notifications:", error);
+            }
+        }
+
+        // Load products list
+        function loadProductsList() {
+            const productsQuery = query(collection(db, "products"), orderBy("createdAt", "desc"));
+            
+            onSnapshot(productsQuery, (snapshot) => {
+                const tbody = document.getElementById('productsTable');
+                tbody.innerHTML = snapshot.docs.map(doc => {
+                    const product = doc.data();
+                    return `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <img src="${product.imageUrl}" alt="${product.name}" class="w-16 h-16 object-cover rounded-lg">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-medium">${product.name}</div>
+                                <div class="text-sm text-gray-500">${product.category}</div>
+                            </td>
+                            <td class="px-6 py-4">KSh ${product.price}</td>
+                            <td class="px-6 py-4">
+                                <span class="${product.stock < 5 ? 'text-red-600' : 'text-gray-900'}">${product.stock}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-full text-xs ${product.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                    ${product.active ? 'Active' : 'Inactive'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex space-x-3">
+                                    <button onclick="editProduct('${doc.id}')" class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="toggleProductStatus('${doc.id}', ${!product.active})" class="text-yellow-600 hover:text-yellow-800">
+                                        <i class="fas fa-${product.active ? 'eye-slash' : 'eye'}"></i>
+                                    </button>
+                                    <button onclick="deleteProduct('${doc.id}')" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            });
+        }
+
+        // Product actions
+        window.toggleProductStatus = async (productId, newStatus) => {
+            try {
+                await updateDoc(doc(db, "products", productId), {
+                    active: newStatus
+                });
+            } catch (error) {
+                console.error("Error updating product status:", error);
+                alert("Failed to update product status");
+            }
+        };
+
+        window.deleteProduct = async (productId) => {
+            if (confirm("Are you sure you want to delete this product?")) {
+                try {
+                    await deleteDoc(doc(db, "products", productId));
+                } catch (error) {
+                    console.error("Error deleting product:", error);
+                    alert("Failed to delete product");
+                }
+            }
+        };
+
+        // Filter products
+        document.getElementById('productFilter').addEventListener('change', (e) => {
+            const filter = e.target.value;
+            const rows = document.querySelectorAll('#productsTable tr');
+            
+            rows.forEach(row => {
+                const stock = parseInt(row.querySelector('td:nth-child(4)').textContent);
+                const status = row.querySelector('td:nth-child(5)').textContent.trim();
+                
+                switch(filter) {
+                    case 'active':
+                        row.style.display = status === 'Active' ? '' : 'none';
+                        break;
+                    case 'inactive':
+                        row.style.display = status === 'Inactive' ? '' : 'none';
+                        break;
+                    case 'low':
+                        row.style.display = stock < 5 ? '' : 'none';
+                        break;
+                    default:
+                        row.style.display = '';
+                }
+            });
+        });
+
+        // Initialize products list on load
+        loadProductsList();
+    </script>
+</body>
+</html>

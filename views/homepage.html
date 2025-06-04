@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAIS - Homepage</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full z-50 py-3">
+        <div class="container mx-auto px-6">
+            <nav class="flex items-center justify-between">
+                <!-- Logo - hidden on mobile -->
+                <a href="/" class="hidden md:flex items-center">
+                    <img src="/public/images/logo.png" alt="RAIS Logo" class="h-12">
+                </a>
+
+                <!-- Mobile Header Items -->
+                <div class="flex items-center justify-between w-full md:hidden">
+                    <!-- Mobile Menu Button (Left) -->
+                    <button id="menuToggle" class="text-gray-600 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+
+                    <!-- Notification Icon (Right) -->
+                    <div class="relative" id="notificationIcon">
+                        <i class="fas fa-bell text-gray-600 hover:text-green-600 cursor-pointer text-xl"></i>
+                        <span id="notificationBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <!-- Notification Icon -->
+                    <div class="relative" id="notificationIcon">
+                        <i class="fas fa-bell text-gray-600 hover:text-green-600 cursor-pointer text-xl"></i>
+                        <span id="notificationBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </div>
+                    
+                    <!-- Cart Icon - Desktop -->
+                    <div class="relative hidden md:block">
+                        <a href="#" class="text-gray-600 hover:text-green-600">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cartBadge" class="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </a>
+                    </div>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="relative" id="profileDropdown">
+                        <button class="flex items-center space-x-3 focus:outline-none" id="profileButton">
+                            <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center">
+                                <span class="text-white text-lg font-semibold" id="userInitials"></span>
+                            </div>
+                            <span id="userName" class="hidden md:inline-block text-gray-700"></span>
+                            <i class="fas fa-chevron-down text-gray-500"></i>
+                        </button>
+
+                        <!-- Profile Dropdown Menu -->
+                        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl py-2 border border-gray-100">
+                            <div class="px-4 py-3 border-b">
+                                <div id="userFullName" class="text-lg font-semibold truncate"></div>
+                                <div id="userEmail" class="text-sm text-gray-500 truncate"></div>
+                            </div>
+                            <div class="px-4 py-2">
+                                <div class="text-sm text-gray-600">Account Details</div>
+                                <div class="mt-2 space-y-2">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-user-circle w-5 text-gray-400"></i>
+                                        <span id="userFirstName" class="ml-2 truncate"></span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-envelope w-5 text-gray-400 flex-shrink-0"></i>
+                                        <span id="userEmailDetail" class="ml-2 text-sm truncate break-all"></span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar w-5 text-gray-400"></i>
+                                        <span id="userJoinDate" class="ml-2 text-sm"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t mt-2">
+                                <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center">
+                                    <i class="fas fa-sign-out-alt w-5"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay (Full Screen) -->
+    <div id="mobileMenu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="fixed right-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 translate-x-full" id="mobileMenuContent">
+            <!-- Mobile Menu Header -->
+            <div class="p-4 border-b flex justify-between items-center">
+                <span class="font-bold text-lg">Menu</span>
+                <button id="closeMenu" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Items -->
+            <div class="overflow-y-auto h-full py-4">
+                <!-- Back to Menu Button - Hidden by default -->
+                <button id="backToMenu" class="hidden px-4 py-2 mb-4 text-gray-600 hover:text-gray-800 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span>Back to Menu</span>
+                </button>
+
+                <!-- Different Sections -->
+                <div id="mobileMainMenu">
+                    <!-- Main menu items -->
+                    <div class="px-4 space-y-2">
+                        <a href="/public/index.html" class="flex items-center p-2 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-home w-5"></i>
+                            <span class="ml-2">Home</span>
+                        </a>
+                        <button onclick="showMobileSection('profile')" class="w-full flex items-center p-2 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-user w-5"></i>
+                            <span class="ml-2">Profile</span>
+                        </button>
+                        <button onclick="showMobileSection('orders')" class="w-full flex items-center p-2 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-history w-5"></i>
+                            <span class="ml-2">Order History</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profileSection" class="hidden px-4">
+                    <!-- Profile content -->
+                </div>
+
+                <!-- Orders Section -->
+                <div id="ordersSection" class="hidden px-4">
+                    <!-- Orders content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-12">
+        <div class="container mx-auto px-6">
+            <h1 class="text-3xl font-bold mb-8">Welcome to RAIS</h1>
+            
+            <!-- Products Section -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-bold mb-6">Our Products</h2>
+                <div id="productsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md mx-auto mt-20 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Notifications</h3>
+                <button onclick="closeNotifications()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="notificationsList" class="max-h-96 overflow-y-auto divide-y"></div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="fixed right-0 top-0 h-full w-96 bg-white shadow-lg transform transition-transform duration-300 translate-x-full" id="cartContent">
+            <!-- Cart Header -->
+            <div class="p-4 border-b flex justify-between items-center bg-primary text-white">
+                <h2 class="text-xl font-semibold">Your Cart</h2>
+                <button onclick="closeCart()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items -->
+            <div class="flex-1 overflow-y-auto p-4" id="cartItems">
+                <!-- Cart items will be loaded here -->
+            </div>
+
+            <!-- Cart Footer -->
+            <div class="border-t p-4 bg-white">
+                <div class="flex justify-between mb-4">
+                    <span class="font-semibold">Total:</span>
+                    <span class="font-bold text-green-600" id="cartTotal">KSh 0.00</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 rounded-lg transition-colors">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from '/public/js/firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        import { collection, query, orderBy, where, onSnapshot, updateDoc, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+        // Auth state check with profile data
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '/views/login.html';
+            } else {
+                // Get user document from Firestore
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const userData = userDoc.data();
+                
+                // Update profile information
+                const firstName = userData?.firstName || '';
+                const lastName = userData?.lastName || '';
+                const initials = (firstName[0] || '') + (lastName[0] || '');
+                
+                document.getElementById('userInitials').textContent = initials.toUpperCase();
+                document.getElementById('userName').textContent = `${firstName} ${lastName}`;
+                document.getElementById('userFullName').textContent = `${firstName} ${lastName}`;
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userFirstName').textContent = firstName;
+                document.getElementById('userEmailDetail').textContent = user.email;
+                document.getElementById('userJoinDate').textContent = `Joined ${new Date(userData?.createdAt).toLocaleDateString()}`;
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = '/views/login.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        });
+
+        // Notification handling functions
+        function updateNotificationBadge(notifications) {
+            const badge = document.getElementById('notificationBadge');
+            const mobileBadge = document.getElementById('mobileNotificationBadge');
+            const unreadCount = notifications.filter(n => !n.read).length;
+            
+            [badge, mobileBadge].forEach(element => {
+                if (element) {
+                    if (unreadCount > 0) {
+                        element.textContent = unreadCount;
+                        element.classList.remove('hidden');
+                    } else {
+                        element.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // Notifications listener
+        const notificationsQuery = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
+        onSnapshot(notificationsQuery, (snapshot) => {
+            try {
+                const notifications = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                updateNotificationBadge(notifications);
+                populateNotificationsList(notifications);
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        });
+
+        function populateNotificationsList(notifications) {
+            const list = document.getElementById('notificationsList');
+            if (!list) return;
+
+            list.innerHTML = notifications.map(notification => `
+                <div class="p-4 border-b last:border-b-0 ${notification.read ? 'bg-white' : 'bg-blue-50'}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-gray-800">${notification.title}</h4>
+                            <p class="text-gray-600 text-sm mt-1">${notification.message}</p>
+                        </div>
+                        ${!notification.read ? `
+                            <button onclick="markAsRead('${notification.id}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                                Mark as read
+                            </button>
+                        ` : ''}
+                    </div>
+                    <span class="text-gray-400 text-xs mt-2 block">
+                        ${new Date(notification.createdAt?.toDate()).toLocaleString()}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Add mark as read functionality
+        window.markAsRead = async (notificationId) => {
+            try {
+                const notificationRef = doc(db, 'notifications', notificationId);
+                await updateDoc(notificationRef, {
+                    read: true
+                });
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        };
+
+        // Sync user info across desktop and mobile
+        function updateUserInfo(userData) {
+            const { firstName, lastName, email } = userData;
+            const initials = (firstName[0] || '') + (lastName[0] || '');
+            
+            // Update desktop elements
+            document.getElementById('userInitials').textContent = initials.toUpperCase();
+            document.getElementById('userName').textContent = `${firstName} ${lastName}`;
+            
+            // Update mobile elements
+            document.getElementById('userInitialsMobile').textContent = initials.toUpperCase();
+            document.getElementById('userNameMobile').textContent = `${firstName} ${lastName}`;
+            document.getElementById('userEmailMobile').textContent = email;
+        }
+
+        // Sync notification badges
+        function updateNotificationBadges(count) {
+            ['notificationBadge', 'mobileNotificationBadge'].forEach(id => {
+                const badge = document.getElementById(id);
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
+        }
+
+        // Notification modal handlers
+        document.getElementById('notificationIcon').addEventListener('click', () => {
+            document.getElementById('notificationModal').classList.remove('hidden');
+        });
+
+        window.closeNotifications = () => {
+            document.getElementById('notificationModal').classList.add('hidden');
+        };
+
+        // Toggle profile dropdown
+        const profileButton = document.getElementById('profileButton');
+        const profileMenu = document.getElementById('profileMenu');
+        
+        profileButton.addEventListener('click', () => {
+            profileMenu.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+
+        // Load products
+        function loadProducts() {
+            // Temporary solution while index is building
+            const productsQuery = query(
+                collection(db, "products"),
+                where("active", "==", true)
+                // orderBy will be added back once index is built
+                // orderBy("createdAt", "desc")
+            );
+
+            onSnapshot(productsQuery, (snapshot) => {
+                const productsGrid = document.getElementById('productsGrid');
+                productsGrid.innerHTML = snapshot.docs.map(doc => {
+                    const product = doc.data();
+                    return `
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                            <div class="relative">
+                                <img src="${product.imageUrl}" alt="${product.name}" 
+                                    class="w-full h-64 object-cover">
+                                ${product.stock < 5 ? `
+                                    <span class="absolute top-4 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                        Low Stock
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-semibold">${product.name}</h3>
+                                    <span class="text-green-600 font-bold">KSh ${product.price}</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">${product.description}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Stock: ${product.stock}</span>
+                                    <button onclick="addToCart('${doc.id}')" 
+                                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        // Initialize products on load
+        window.addEventListener('DOMContentLoaded', loadProducts);
+
+        // Cart functionality
+        let cartItems = [];
+
+        window.addToCart = async (productId) => {
+            try {
+                const productRef = doc(db, "products", productId);
+                const productDoc = await getDoc(productRef);
+                const product = productDoc.data();
+
+                cartItems.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1,
+                    imageUrl: product.imageUrl
+                });
+
+                updateCartUI();
+                openCart();
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+            }
+        };
+
+        function updateCartUI() {
+            const cartItemsEl = document.getElementById('cartItems');
+            const cartTotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+            
+            cartItemsEl.innerHTML = cartItems.length ? cartItems.map((item, index) => `
+                <div class="flex items-center gap-4 mb-4 p-2 border-b">
+                    <img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                    <div class="flex-1">
+                        <h3 class="font-semibold">${item.name}</h3>
+                        <p class="text-green-600">KSh ${item.price}</p>
+                        <div class="flex items-center gap-2 mt-1">
+                            <button onclick="updateQuantity(${index}, -1)" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${index}, 1)" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button onclick="removeFromCart(${index})" class="ml-auto text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-center text-gray-500 py-8">Your cart is empty</p>';
+
+            document.getElementById('cartTotal').textContent = `KSh ${cartTotal.toLocaleString()}`;
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cartBadge');
+            const mobileBadge = document.getElementById('mobilecartBadge');
+            
+            [badge, mobileBadge].forEach(el => {
+                if (el) {
+                    el.textContent = totalItems;
+                    el.style.display = totalItems ? 'flex' : 'none';
+                }
+            });
+        }
+
+        window.openCart = () => {
+            document.getElementById('cartModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('cartContent').classList.remove('translate-x-full');
+            }, 10);
+        };
+
+        window.closeCart = () => {
+            document.getElementById('cartContent').classList.add('translate-x-full');
+            setTimeout(() => {
+                document.getElementById('cartModal').classList.add('hidden');
+            }, 300);
+        };
+
+        window.updateQuantity = (index, change) => {
+            const item = cartItems[index];
+            const newQuantity = item.quantity + change;
+            
+            if (newQuantity > 0) {
+                item.quantity = newQuantity;
+                updateCartUI();
+            }
+        };
+
+        window.removeFromCart = (index) => {
+            cartItems.splice(index, 1);
+            updateCartUI();
+        };
+
+        window.checkout = () => {
+            if (cartItems.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            // Save cart items to localStorage
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            // Redirect to checkout page
+            window.location.href = '/views/checkout.html';
+        };
+
+        // Close cart when clicking outside
+        document.getElementById('cartModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeCart();
+            }
+        });
+        
+        // Mobile menu functionality
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuContent = document.getElementById('mobileMenuContent');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeMenu = document.getElementById('closeMenu');
+
+        // Open menu
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+            setTimeout(() => {
+                mobileMenuContent.classList.remove('translate-x-full');
+            }, 10);
+        });
+
+        // Close menu
+        function closeMobileMenu() {
+            mobileMenuContent.classList.add('translate-x-full');
+            setTimeout(() => {
+                mobileMenu.classList.add('hidden');
+            }, 300);
+        }
+
+        closeMenu.addEventListener('click', closeMobileMenu);
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) {
+                closeMobileMenu();
+            }
+        });
+
+        // Mobile menu section handling
+        const sections = ['mobileMainMenu', 'profileSection', 'ordersSection'];
+        const backButton = document.getElementById('backToMenu');
+
+        window.showMobileSection = (sectionName) => {
+            // Hide all sections
+            sections.forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(`${sectionName}Section`).classList.remove('hidden');
+            
+            // Show back button
+            backButton.classList.remove('hidden');
+        };
+
+        // Back button handler
+        backButton.addEventListener('click', () => {
+            // Hide all sections
+            sections.forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+
+            // Show main menu
+            document.getElementById('mobileMainMenu').classList.remove('hidden');
+            
+            // Hide back button
+            backButton.classList.add('hidden');
+        });
+
+        // Mobile menu item click handlers
+        document.getElementById('mobileMainMenu').addEventListener('click', (e) => {
+            if (e.target.closest('button')) {
+                const section = e.target.closest('button').onclick.toString().match(/'([^']+)'/)[1];
+                showMobileSection(section);
+            }
+        });
+
+        // Profile section content
+        document.getElementById('profileSection').innerHTML = `
+            <div class="p-4 bg-gray-50 rounded-lg mb-4">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-16 h-16 rounded-full bg-green-600 flex items-center justify-center">
+                        <span class="text-white text-2xl font-semibold" id="profileInitials"></span>
+                    </div>
+                    <div>
+                        <div id="profileFullName" class="font-bold text-lg"></div>
+                        <div id="profileEmail" class="text-gray-600"></div>
+                    </div>
+                </div>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-phone w-5"></i>
+                        <span id="profilePhone" class="ml-2"></span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar w-5"></i>
+                        <span id="profileJoinDate" class="ml-2"></span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Orders section content
+        document.getElementById('ordersSection').innerHTML = `
+            <div class="py-4">
+                <h3 class="text-lg font-semibold mb-4">Your Orders</h3>
+                <div id="ordersList" class="space-y-4">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </div>
+        `;
+
+        // Load orders for the orders section
+        async function loadOrders() {
+            try {
+                const ordersQuery = query(
+                    collection(db, "orders"),
+                    where("userId", "==", auth.currentUser.uid),
+                    orderBy("createdAt", "desc")
+                );
+
+                const snapshot = await getDocs(ordersQuery);
+                const ordersList = document.getElementById('ordersList');
+                
+                ordersList.innerHTML = snapshot.docs.map(doc => {
+                    const order = doc.data();
+                    return `
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold">Order #${doc.id.slice(-6)}</span>
+                                <span class="text-sm ${order.status === 'completed' ? 'text-green-600' : 'text-yellow-600'}">
+                                    ${order.status}
+                            </span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <p>Total: KSh ${order.total.toLocaleString()}</p>
+                                <p>Date: ${new Date(order.createdAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('') || '<p class="text-center text-gray-500">No orders found</p>';
+            } catch (error) {
+                console.error("Error loading orders:", error);
+            }
+        }
+
+        // Show orders section and load orders
+        document.getElementById('mobileMainMenu').addEventListener('click', (e) => {
+            if (e.target.closest('button')?.textContent.includes('Order History')) {
+                showMobileSection('orders');
+                loadOrders();
+            }
+        });
+
+        // Show profile section
+        document.getElementById('mobileMainMenu').addEventListener('click', (e) => {
+            if (e.target.closest('button')?.textContent.includes('Profile')) {
+                showMobileSection('profile');
+            }
+        });
+    </script>
+</body>
+</html>
