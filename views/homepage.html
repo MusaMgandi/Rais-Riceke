@@ -47,6 +47,12 @@
                         </a>
                     </div>
 
+                    <!-- Logout Button - Desktop -->
+                    <button id="desktopLogoutBtn" class="text-red-600 hover:text-red-700 flex items-center space-x-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+
                     <!-- User Profile Dropdown -->
                     <div class="relative" id="profileDropdown">
                         <button class="flex items-center space-x-3 focus:outline-none" id="profileButton">
@@ -120,20 +126,16 @@
                             <i class="fas fa-home w-5"></i>
                             <span class="ml-2">Home</span>
                         </a>
-                        <button onclick="showMobileSection('profile')" class="w-full flex items-center p-2 hover:bg-gray-100 rounded-lg">
-                            <i class="fas fa-user w-5"></i>
-                            <span class="ml-2">Profile</span>
-                        </button>
                         <button onclick="showMobileSection('orders')" class="w-full flex items-center p-2 hover:bg-gray-100 rounded-lg">
                             <i class="fas fa-history w-5"></i>
                             <span class="ml-2">Order History</span>
                         </button>
+                        <!-- Logout Button - Mobile -->
+                        <button id="mobileLogoutBtn" class="w-full flex items-center p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                            <i class="fas fa-sign-out-alt w-5"></i>
+                            <span class="ml-2">Logout</span>
+                        </button>
                     </div>
-                </div>
-
-                <!-- Profile Section -->
-                <div id="profileSection" class="hidden px-4">
-                    <!-- Profile content -->
                 </div>
 
                 <!-- Orders Section -->
@@ -204,7 +206,7 @@
     <script type="module">
         import { auth, db } from '/public/js/firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-        import { collection, query, orderBy, where, onSnapshot, updateDoc, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+        import { collection, query, orderBy, where, onSnapshot, updateDoc, doc, getDoc, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
         // Auth state check with profile data
         onAuthStateChanged(auth, async (user) => {
@@ -556,32 +558,157 @@
         const sections = ['mobileMainMenu', 'profileSection', 'ordersSection'];
         const backButton = document.getElementById('backToMenu');
 
-        window.showMobileSection = (sectionName) => {
-            // Hide all sections
-            sections.forEach(section => {
-                document.getElementById(section).classList.add('hidden');
-            });
+        window.showMobileSection = async (sectionName) => {
+            try {
+                // Check authentication first
+                if (!auth.currentUser) {
+                    console.log('User not authenticated');
+                    window.location.href = '/views/login.html';
+                    return;
+                }
 
-            // Show selected section
-            document.getElementById(`${sectionName}Section`).classList.remove('hidden');
-            
-            // Show back button
-            backButton.classList.remove('hidden');
+                // Hide all sections
+                sections.forEach(section => {
+                    const sectionEl = document.getElementById(section);
+                    if (sectionEl) sectionEl.classList.add('hidden');
+                });
+
+                // Show selected section
+                const selectedSection = document.getElementById(`${sectionName}Section`);
+                if (selectedSection) {
+                    selectedSection.classList.remove('hidden');
+                    // Show back button for profile and orders sections
+                    backButton.classList.toggle('hidden', sectionName === 'mobileMain');
+                }
+                
+                // Load data if needed
+                if (sectionName === 'profile') {
+                    await loadProfileData();
+                    await loadTransactionHistory();
+                }
+            } catch (error) {
+                console.error('Error in showMobileSection:', error);
+            }
         };
 
-        // Back button handler
-        backButton.addEventListener('click', () => {
-            // Hide all sections
-            sections.forEach(section => {
-                document.getElementById(section).classList.add('hidden');
-            });
+        // Clear back button handler and replace with new one
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                // Hide all sections
+                sections.forEach(section => {
+                    const sectionEl = document.getElementById(section);
+                    if (sectionEl) sectionEl.classList.add('hidden');
+                });
 
-            // Show main menu
-            document.getElementById('mobileMainMenu').classList.remove('hidden');
-            
-            // Hide back button
-            backButton.classList.add('hidden');
-        });
+                // Show main menu
+                const mainMenu = document.getElementById('mobileMainMenu');
+                if (mainMenu) {
+                    mainMenu.classList.remove('hidden');
+                    backButton.classList.add('hidden');
+                }
+            });
+        }
+
+        // Update loadProfileData function
+        async function loadProfileData() {
+            try {
+                // Check authentication
+                if (!auth.currentUser) {
+                    console.log('User not authenticated');
+                    return;
+                }
+
+                const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+                if (!userDoc.exists()) {
+                    console.log('User document not found');
+                    return;
+                }
+
+                const userData = userDoc.data();
+                const firstName = userData?.firstName || '';
+                const lastName = userData?.lastName || '';
+                const fullName = `${firstName} ${lastName}`;
+                const email = auth.currentUser.email;
+                const joinDate = `Joined ${new Date(userData?.createdAt).toLocaleDateString()}`;
+
+                // Update mobile profile elements
+                const elements = {
+                    mobileProfileInitials: document.getElementById('mobileProfileInitials'),
+                    mobileProfileName: document.getElementById('mobileProfileName'),
+                    mobileProfileEmail: document.getElementById('mobileProfileEmail'),
+                    mobileUserName: document.getElementById('mobileUserName'),
+                    mobileUserEmail: document.getElementById('mobileUserEmail'),
+                    mobileJoinDate: document.getElementById('mobileJoinDate')
+                };
+
+                if (elements.mobileProfileInitials) elements.mobileProfileInitials.textContent = (firstName[0] || '') + (lastName[0] || '');
+                if (elements.mobileProfileName) elements.mobileProfileName.textContent = fullName;
+                if (elements.mobileProfileEmail) elements.mobileProfileEmail.textContent = email;
+                if (elements.mobileUserName) elements.mobileUserName.textContent = fullName;
+                if (elements.mobileUserEmail) elements.mobileUserEmail.textContent = email;
+                if (elements.mobileJoinDate) elements.mobileJoinDate.textContent = joinDate;
+            } catch (error) {
+                console.error('Error loading profile data:', error);
+            }
+        }
+
+        // Update loadTransactionHistory function
+        async function loadTransactionHistory() {
+            try {
+                // Check authentication
+                if (!auth.currentUser) {
+                    console.log('User not authenticated');
+                    return;
+                }
+
+                const transactionsQuery = query(
+                    collection(db, "orders"),
+                    where("userId", "==", auth.currentUser.uid),
+                    limit(5)
+                );
+
+                const transactionsList = document.getElementById('mobileTransactionsList');
+                if (!transactionsList) return;
+
+                const snapshot = await getDocs(transactionsQuery);
+                
+                if (snapshot.empty) {
+                    transactionsList.innerHTML = '<p class="text-gray-500 text-center py-4">No transactions found</p>';
+                    return;
+                }
+
+                // Sort manually since we removed orderBy
+                const sortedDocs = snapshot.docs.sort((a, b) => 
+                    b.data().createdAt - a.data().createdAt
+                );
+
+                transactionsList.innerHTML = sortedDocs.map(doc => {
+                    const transaction = doc.data();
+                    return `
+                        <div class="border-b border-gray-100 pb-3">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-medium">Order #${doc.id.slice(-6)}</p>
+                                    <p class="text-sm text-gray-500">${new Date(transaction.createdAt).toLocaleDateString()}</p>
+                                </div>
+                                <span class="text-green-600 font-semibold">KSh ${transaction.total?.toLocaleString() || 0}</span>
+                            </div>
+                            <div class="mt-1">
+                                <span class="text-xs px-2 py-1 rounded-full ${
+                                    transaction.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                }">${transaction.status || 'pending'}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                const transactionsList = document.getElementById('mobileTransactionsList');
+                if (transactionsList) {
+                    transactionsList.innerHTML = '<p class="text-red-500 text-center py-4">Error loading transactions</p>';
+                }
+            }
+        }
 
         // Mobile menu item click handlers
         document.getElementById('mobileMainMenu').addEventListener('click', (e) => {
@@ -673,6 +800,18 @@
             if (e.target.closest('button')?.textContent.includes('Profile')) {
                 showMobileSection('profile');
             }
+        });
+
+        // Add event listeners for both logout buttons
+        ['desktopLogoutBtn', 'mobileLogoutBtn'].forEach(id => {
+            document.getElementById(id).addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    window.location.href = '/views/login.html';
+                } catch (error) {
+                    console.error('Error signing out:', error);
+                }
+            });
         });
     </script>
 </body>
